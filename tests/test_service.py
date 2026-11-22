@@ -4,7 +4,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 from supportbot.kb import SQLiteKBStore
-from supportbot.service import ChatService, FALLBACK
+from supportbot.service import FALLBACK, ChatService
 
 
 class FakeGenerator:

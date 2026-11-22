@@ -1,8 +1,7 @@
-import os
 import json
+import os
 from dataclasses import dataclass
 from pathlib import Path
-
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
 PACKAGE_DIR = Path(__file__).resolve().parent
@@ -15,6 +14,7 @@ ENV_FILE_KEYS = {
     'MESSENGER_PAGE_ID', 'INSTAGRAM_USER_ID',
     'DATABASE_URL', 'LADI_TENANT_ID', 'DEFAULT_KB_SCOPE', 'EMBEDDING_MODEL',
     'WEB_SCOPE_MAP', 'CHANNEL_SCOPE_MAP',
+    'SENTRY_DSN',
 }
 
 

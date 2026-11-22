@@ -95,8 +95,33 @@ Any app, CRM, or messaging provider can call `POST /api/chat` from an allowed br
 Run tests from the repository root:
 
 ```powershell
-python -m unittest discover -s supportbot/tests -v
+$env:PYTHONPATH = '..'
+python -m unittest discover -s tests -p "test_*.py" -v
 ```
+
+## Reproducible setup
+
+Local SQLite mode requires no third-party runtime packages:
+
+```powershell
+python -m pip install -r requirements.txt
+python -m pip install -r requirements-dev.txt
+```
+
+Hosted mode adds pinned PostgreSQL and embedding dependencies:
+
+```powershell
+python -m pip install -r requirements-hosted.txt
+```
+
+Use Docker for a zero-account local reproduction:
+
+```powershell
+docker compose up --build
+curl http://127.0.0.1:8080/health
+```
+
+The CI pipeline runs Ruff and the full unittest suite on Python 3.11 and 3.12.
 #   s u p p o r t _ n e u r a l  
  #   s u p p o r t _ n e u r a l  
  # support_neural

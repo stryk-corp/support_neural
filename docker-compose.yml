@@ -1,0 +1,9 @@
+services:
+  supportbot:
+    build: .
+    environment:
+      SUPPORTBOT_DB: /tmp/supportbot.sqlite3
+      GEMINI_DAILY_CALL_LIMIT: "0"
+      ALLOWED_ORIGINS: "http://localhost:8080"
+    ports:
+      - "8080:8080"

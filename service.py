@@ -3,7 +3,6 @@ import re
 import time
 from datetime import datetime, timezone
 
-
 FALLBACK = (
     "I can't confirm that from the information approved for customer support. "
     'Please contact NeuralVillage through its published support channels.'

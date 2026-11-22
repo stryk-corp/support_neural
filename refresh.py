@@ -1,6 +1,6 @@
-from .config import Settings
 from pathlib import Path
 
+from .config import Settings
 from .kb import SQLiteKBStore, refresh_from_files, refresh_workflow_library
 
 

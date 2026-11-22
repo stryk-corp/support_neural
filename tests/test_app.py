@@ -165,6 +165,103 @@ class SupportBotHTTPTests(unittest.TestCase):
             {'role': 'user', 'content': 'What is the support contact?'}
         ])
 
+    def test_admin_knowledge_accepts_approved_document(self):
+        response, body = self.request(
+            '/admin/knowledge',
+            method='POST',
+            payload={
+                'tenant_id': 'neuralvillage',
+                'scope_id': 'public',
+                'documents': [{
+                    'path': 'customer_support.general',
+                    'content': 'Support is available by email.',
+                }],
+            },
+            authorization='Bearer admin-test-token',
+        )
+        self.assertEqual(response['status'], '200 OK')
+        self.assertIn(b'"indexed": 1', body)
+
+    def test_admin_knowledge_rejects_secret_content(self):
+        response, _ = self.request(
+            '/admin/knowledge',
+            method='POST',
+            payload={
+                'tenant_id': 'neuralvillage',
+                'scope_id': 'public',
+                'documents': [{
+                    'path': 'customer_support.general',
+                    'content': 'api_key=sample-secret',
+                }],
+            },
+            authorization='Bearer admin-test-token',
+        )
+        self.assertEqual(response['status'], '400 Bad Request')
+
+    def test_admin_reindex_reports_missing_source(self):
+        response, body = self.request(
+            '/admin/reindex',
+            method='POST',
+            authorization='Bearer admin-test-token',
+        )
+        self.assertEqual(response['status'], '400 Bad Request')
+        self.assertIn(b'KB refresh failed', body)
+
+    def test_admin_feedback_queue_lists_submitted_correction(self):
+        self.request(
+            '/api/feedback',
+            method='POST',
+            payload={
+                'rating': -1,
+                'source_paths': ['faq[14].answer'],
+                'correction': 'Update the listed support hours.',
+            },
+            origin='https://www.example.test',
+        )
+        response, body = self.request(
+            '/admin/feedback',
+            authorization='Bearer admin-test-token',
+        )
+        self.assertEqual(response['status'], '200 OK')
+        self.assertIn(b'items', body)
+
+    def test_meta_webhook_rejects_invalid_signature(self):
+        response, _ = self.request(
+            '/webhooks/meta',
+            method='POST',
+            payload={'entry': []},
+        )
+        self.assertEqual(response['status'], '403 Forbidden')
+
+    def test_options_request_allows_configured_origin(self):
+        response, body = self.request(
+            '/api/chat',
+            method='OPTIONS',
+            origin='https://www.example.test',
+        )
+        self.assertEqual(response['status'], '204 No Content')
+        self.assertEqual(body, b'')
+
+    def test_unknown_route_returns_not_found(self):
+        response, _ = self.request('/does-not-exist')
+        self.assertEqual(response['status'], '404 Not Found')
+
+    def test_invalid_chat_payload_is_rejected(self):
+        response, _ = self.request(
+            '/api/chat',
+            method='POST',
+            payload={'message': 123},
+            origin='https://www.example.test',
+        )
+        self.assertEqual(response['status'], '400 Bad Request')
+
+    def test_meta_verification_rejects_wrong_token(self):
+        response, _ = self.request(
+            '/webhooks/meta',
+            payload={'hub.mode': 'subscribe'},
+        )
+        self.assertEqual(response['status'], '403 Forbidden')
+
 
 if __name__ == '__main__':
     unittest.main()

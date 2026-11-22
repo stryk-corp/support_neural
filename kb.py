@@ -7,7 +7,6 @@ from contextlib import contextmanager
 from datetime import date
 from pathlib import Path
 
-
 BLOCKED_ROOTS = {
     'kb_meta',
     'customer_support_ai_safety',

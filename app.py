@@ -1,6 +1,7 @@
-import hmac
 import hashlib
+import hmac
 import json
+import logging
 import re
 import time
 from collections import defaultdict, deque
@@ -10,15 +11,17 @@ from urllib.parse import parse_qs
 from .config import Settings
 from .gemini import GeminiClient
 from .kb import (
+    SECRET_PATTERNS,
     FastEmbedder,
     PostgresVectorStore,
-    SECRET_PATTERNS,
     SQLiteKBStore,
     refresh_from_files,
     refresh_workflow_library,
 )
 from .meta import MetaClient, extract_message_events, verify_signature
-from .service import ChatService, MEDICAL_REQUEST, PERSONAL_DATA, PRIVATE_REFERENCE
+from .service import MEDICAL_REQUEST, PERSONAL_DATA, PRIVATE_REFERENCE, ChatService
+
+logger = logging.getLogger(__name__)
 
 
 class RateLimiter:
@@ -73,7 +76,7 @@ class SupportBotApplication:
                 scope_id='public',
             )
         except ValueError:
-            pass
+            logger.warning("knowledge_refresh_failed", exc_info=True)
 
     def __call__(self, environ, start_response):
         method = environ.get('REQUEST_METHOD', 'GET').upper()
