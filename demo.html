@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Ladi - NeuralVillage AI Demo</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #172a26;
+      --muted: #62726e;
+      --line: #dbe5e1;
+      --paper: #f3f7f4;
+      --white: #fff;
+      --green: #14785f;
+      --green-dark: #0c5846;
+      --mint: #e2f1e9;
+      --coral: #c2644e;
+      font-family: "Segoe UI", Arial, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background-color: var(--paper);
+      background-image: linear-gradient(rgba(19, 62, 49, .035) 1px, transparent 1px), linear-gradient(90deg, rgba(19, 62, 49, .035) 1px, transparent 1px);
+      background-size: 34px 34px;
+    }
+    .topbar {
+      height: 66px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 34px;
+      color: #f7fbf8;
+      background: var(--green-dark);
+      border-bottom: 3px solid #d9906d;
+    }
+    .brand { display: flex; align-items: center; gap: 11px; font-size: 14px; font-weight: 700; }
+    .brand-mark { width: 29px; height: 29px; display: grid; place-items: center; border: 1px solid #9dc8b6; border-radius: 8px; color: #d8f0e2; font-family: Georgia, serif; font-size: 17px; }
+    .top-meta { display: flex; align-items: center; gap: 10px; color: #cae0d6; font-size: 12px; }
+    .live-dot { width: 7px; height: 7px; border-radius: 50%; background: #e5bd73; }
+    main { width: min(1050px, calc(100% - 40px)); margin: 48px auto 40px; }
+    .intro { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: 22px; }
+    .eyebrow { margin-bottom: 10px; color: var(--green); font-size: 11px; font-weight: 750; text-transform: uppercase; }
+    h1 { margin: 0; font-family: Georgia, "Times New Roman", serif; font-size: clamp(30px, 5vw, 46px); font-weight: 500; line-height: 1.08; }
+    .intro-copy { max-width: 360px; margin: 0; color: var(--muted); font-size: 14px; line-height: 1.55; }
+    .layout { display: grid; grid-template-columns: minmax(0, 1fr) 250px; gap: 18px; align-items: start; }
+    .chat { min-height: 560px; display: flex; flex-direction: column; overflow: hidden; background: var(--white); border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 16px 42px rgba(34, 69, 55, .08); }
+    .chat-head { display: flex; justify-content: space-between; align-items: center; padding: 17px 20px; border-bottom: 1px solid var(--line); }
+    .assistant { display: flex; align-items: center; gap: 11px; }
+    .avatar { width: 36px; height: 36px; display: grid; place-items: center; color: #fff; background: var(--green); border-radius: 9px; font-family: Georgia, serif; font-size: 17px; }
+    .assistant-name { font-size: 14px; font-weight: 700; }
+    .assistant-state { margin-top: 3px; color: var(--muted); font-size: 11px; }
+    .local-badge { padding: 6px 9px; border: 1px solid #d6e8df; border-radius: 5px; background: #f3faf6; color: var(--green-dark); font-size: 10px; font-weight: 750; letter-spacing: .04em; text-transform: uppercase; }
+    .messages { min-height: 330px; flex: 1; display: flex; flex-direction: column; gap: 12px; overflow-y: auto; padding: 22px; }
+    .message { width: fit-content; max-width: min(82%, 590px); padding: 12px 14px; border: 1px solid #e0e9e4; border-radius: 4px 13px 13px 13px; background: #f5f8f6; color: var(--ink); font-size: 14px; line-height: 1.55; white-space: pre-wrap; overflow-wrap: anywhere; animation: arrive .18s ease-out; }
+    .message.user { align-self: flex-end; border-color: #cde2d7; border-radius: 13px 4px 13px 13px; background: var(--mint); }
+    .message.waiting { color: var(--muted); font-style: italic; }
+    .suggestions { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 22px 18px; }
+    .suggestion { min-height: 34px; padding: 7px 10px; border: 1px solid #cbd9d2; border-radius: 5px; background: white; color: #31534a; font-size: 12px; cursor: pointer; }
+    .suggestion:hover, .suggestion:focus-visible { border-color: var(--green); background: #f1f8f4; }
+    form { display: flex; gap: 9px; padding: 13px; border-top: 1px solid var(--line); background: #fbfcfb; }
+    input { min-width: 0; flex: 1; height: 44px; padding: 0 13px; border: 1px solid #cbd7d1; border-radius: 6px; outline: none; color: var(--ink); background: white; font: inherit; font-size: 14px; }
+    input:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(20, 120, 95, .12); }
+    .send { min-width: 84px; border: 0; border-radius: 6px; background: var(--green); color: white; font-size: 13px; font-weight: 700; cursor: pointer; }
+    .send:disabled { opacity: .58; cursor: wait; }
+    .privacy { margin: 0; padding: 0 17px 14px; color: #687871; font-size: 11px; line-height: 1.5; }
+    aside { padding: 18px 17px; border-top: 3px solid var(--coral); background: #fff; }
+    aside h2 { margin: 0 0 12px; font-family: Georgia, "Times New Roman", serif; font-size: 19px; font-weight: 500; }
+    .fact { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-top: 1px solid #e8eeea; font-size: 12px; }
+    .fact span:first-child { color: var(--muted); }
+    .fact strong { text-align: right; font-weight: 650; }
+    .aside-note { margin: 14px 0 0; padding-top: 12px; border-top: 1px solid #e8eeea; color: var(--muted); font-size: 11px; line-height: 1.5; }
+    .status { min-height: 16px; padding: 0 14px 8px; color: var(--muted); font-size: 11px; }
+    @keyframes arrive { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+    @media (max-width: 760px) {
+      .topbar { height: 58px; padding: 0 16px; }
+      main { width: min(100% - 22px, 600px); margin: 28px auto; }
+      .intro { display: block; margin-bottom: 17px; }
+      .intro-copy { margin-top: 11px; }
+      .layout { grid-template-columns: 1fr; }
+      .chat { min-height: min(66vh, 590px); }
+      aside { display: grid; grid-template-columns: 1fr 1fr; gap: 0 18px; }
+      aside h2, .aside-note { grid-column: 1 / -1; }
+    }
+    @media (max-width: 420px) {
+      .top-meta { font-size: 10px; }
+      .local-badge { display: none; }
+      .chat { min-height: 65vh; }
+      .messages { padding: 15px; }
+      .suggestions { padding: 0 15px 14px; }
+      form { padding: 10px; }
+      .send { min-width: 66px; }
+    }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; scroll-behavior: auto !important; } }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark" aria-hidden="true">N</span><span>NeuralVillage</span></div>
+    <div class="top-meta"><span class="live-dot" aria-hidden="true"></span><span>OFFICIAL AI DEMO</span></div>
+  </header>
+  <main>
+    <section class="intro" aria-labelledby="page-title">
+      <div><div class="eyebrow">Official AI / web channel</div><h1 id="page-title">Talk with Ladi</h1></div>
+      <p class="intro-copy">Answers are limited to the public information approved in the connected knowledge base.</p>
+    </section>
+    <div class="layout">
+      <section class="chat" aria-label="Support conversation">
+        <div class="chat-head">
+          <div class="assistant"><div class="avatar" aria-hidden="true">L</div><div><div class="assistant-name">Ladi — NeuralVillage AI</div><div class="assistant-state" id="api-state">Connecting to Ladi</div></div></div>
+          <span class="local-badge">Local demo</span>
+        </div>
+        <div class="messages" id="messages" aria-live="polite" aria-relevant="additions">
+          <div class="message">Hello. What can I help you find out about NeuralVillage?</div>
+        </div>
+        <div class="suggestions" aria-label="Suggested questions">
+          <button class="suggestion" type="button">What is NeuralVillage?</button>
+          <button class="suggestion" type="button">How can I contact support?</button>
+          <button class="suggestion" type="button">What is NeuralSpace?</button>
+        </div>
+        <form id="chat-form">
+          <input id="question" type="text" maxlength="2000" placeholder="Ask a question" aria-label="Ask a question" autocomplete="off" required>
+          <button class="send" id="send" type="submit">Send</button>
+        </form>
+        <div class="status" id="status" role="status"></div>
+        <p class="privacy">Please don’t share passwords, verification codes, or private health details. Messages are sent to the configured AI provider when a response needs generation.</p>
+      </section>
+      <aside aria-label="Demo configuration">
+        <h2>Session</h2>
+        <div class="fact"><span>Knowledge source</span><strong>Approved public facts</strong></div>
+        <div class="fact"><span>Model</span><strong>Gemini</strong></div>
+        <div class="fact"><span>Local index</span><strong>SQLite FTS</strong></div>
+        <p class="aside-note">Repeated generic questions may use a cached answer. Knowledge-base refreshes are local and do not call the model.</p>
+      </aside>
+    </div>
+  </main>
+  <script>
+    (() => {
+      const form = document.getElementById('chat-form');
+      const input = document.getElementById('question');
+      const send = document.getElementById('send');
+      const messages = document.getElementById('messages');
+      const status = document.getElementById('status');
+      const apiState = document.getElementById('api-state');
+      const conversation = [];
+
+      function addMessage(text, kind) {
+        const node = document.createElement('div');
+        node.className = `message ${kind || ''}`;
+        node.textContent = text;
+        messages.appendChild(node);
+        messages.scrollTop = messages.scrollHeight;
+        return node;
+      }
+
+      fetch('/health', { credentials: 'omit' })
+        .then(async response => {
+          if (!response.ok) throw new Error('offline');
+          const health = await response.json();
+          apiState.textContent = health.gemini_configured
+            ? 'Gemini active · session context enabled'
+            : 'Gemini key required for AI replies';
+        })
+        .catch(() => { apiState.textContent = 'Local API unavailable'; });
+
+      document.querySelectorAll('.suggestion').forEach(button => {
+        button.addEventListener('click', () => {
+          input.value = button.textContent;
+          form.requestSubmit();
+        });
+      });
+
+      form.addEventListener('submit', async event => {
+        event.preventDefault();
+        const message = input.value.trim();
+        if (!message) return;
+        addMessage(message, 'user');
+        input.value = '';
+        send.disabled = true;
+        status.textContent = 'Thinking';
+        const waiting = addMessage('Checking approved support information…', 'waiting');
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 25000);
+        try {
+          const history = conversation.slice(-6);
+          const response = await fetch('/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message, history }),
+            credentials: 'omit',
+            signal: controller.signal,
+          });
+          const result = await response.json();
+          waiting.remove();
+          if (!response.ok) throw new Error(result.error || 'Support is temporarily unavailable.');
+          const answer = result.answer || 'Support is temporarily unavailable.';
+          addMessage(answer);
+          conversation.push(
+            { role: 'user', content: message },
+            { role: 'assistant', content: answer },
+          );
+          if (conversation.length > 6) conversation.splice(0, conversation.length - 6);
+          status.textContent = result.cached ? 'Cached answer' : 'Response complete';
+        } catch (error) {
+          waiting.remove();
+          addMessage(error.name === 'AbortError'
+            ? 'That took too long. Please try again.'
+            : 'Support is temporarily unavailable. Please try again.');
+          status.textContent = 'Could not reach support';
+        } finally {
+          clearTimeout(timeoutId);
+          send.disabled = false;
+          input.focus();
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

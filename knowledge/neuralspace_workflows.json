@@ -1,0 +1,176 @@
+[
+  {
+    "id": "ns-overview",
+    "scope": "public",
+    "title": "NeuralSpace overview",
+    "content": "NeuralSpace is an account-based neurohealth MVP on the NeuralVillage platform. It combines a Dashboard, MySpace, Brain Lab/Benchmark, Wellness, NeuroHealth Coverage, EMR Exchange, Health Wallet, appointments, clinical-care links, medical-tourism itineraries, Neurolearn, GreenSpace, notifications, and Profile settings. Most features require sign-in. The app is practical software, not a validated diagnostic system."
+  },
+  {
+    "id": "ns-account",
+    "scope": "public",
+    "title": "Account setup",
+    "content": "A visitor creates an account at /signup/ with username and password and optional email. Login is at /login/. Logout is at /logout/. Signup can send a welcome email when email delivery is configured. After signup or onboarding, the active onboarding route redirects to /profile/. Profile completion is required for account data processing: data-processing consent must be enabled, while record-sharing consent is optional."
+  },
+  {
+    "id": "ns-profile",
+    "scope": "public",
+    "title": "Profile settings",
+    "content": "Profile at /profile/ stores the user's full name, account role, supported state, cognitive goal, BCI familiarity, and email. Account roles are Personal Health (patient), Clinical Care (clinician), or Research & Innovation (researcher). Supported goals and device-experience levels are selected from fixed options. Location uses state-level values, not an address or live GPS. The profile can toggle data-processing consent and optional medical-record-sharing consent."
+  },
+  {
+    "id": "ns-dashboard",
+    "scope": "public",
+    "title": "Dashboard",
+    "content": "Dashboard at /dashboard/ is account-specific. It summarizes recent medical reports, wallet balance, health-index points, available clinicians, tourism facilities, seven-day focus/stress chart inputs, and recent account node events. Missing daily cognitive metrics appear as zero in the chart; these are blanks from the view, not verified values."
+  },
+  {
+    "id": "ns-myspace",
+    "scope": "public",
+    "title": "MySpace",
+    "content": "MySpace at /myspace/ gives a personal overview of regional brain-health factors, saved records, course enrollments, wellness protocols, wallet totals, notifications, and map context. The Geospatial Brain Health Data Index uses Leaflet/CARTO or Esri fallback basemaps. Select a state in Profile for MySpace and Brain Lab defaults. MySpace context is regional and state-level, not precise location or a verified travel history."
+  },
+  {
+    "id": "ns-brainlab-entry",
+    "scope": "public",
+    "title": "Brain Lab entry and purpose",
+    "content": "Open Brain Lab under MySpace Benchmark or at /benchmark/. In the Brain health tab, upload supplied derived regional measurements. The current importer accepts CSV, not raw EEG or medical-imaging signals. It is exploratory and non-diagnostic. A selected state is required before import unless the Profile already has one."
+  },
+  {
+    "id": "ns-brainlab-csv",
+    "scope": "public",
+    "title": "Brain Lab CSV format",
+    "content": "The CSV header must include recorded_at and all nine score fields: frontal_lobe_score, temporal_lobe_score, parietal_lobe_score, occipital_lobe_score, cerebellum_balance_score, thought_score, memory_score, attention_score, coordination_score, plus notes. Use notes as the final optional column. The file must be UTF-8, have a .csv extension, be no more than 2 MB, and contain no more than 500 data rows. Every row needs recorded_at and at least one numeric score. Each score must be from 0 to 100 or blank. recorded_at must be ISO 8601."
+  },
+  {
+    "id": "ns-brainlab-measurement",
+    "scope": "public",
+    "title": "Brain Lab measurement calculation",
+    "content": "For each imported row, the displayed measurement score is the mean of the supplied nonblank score values, rounded to one decimal. The app also saves a state geospatial score and a combined health score equal to the mean of the measurement and geospatial scores. Location context is saved separately and does not replace or alter the supplied measurement mean."
+  },
+  {
+    "id": "ns-brainlab-analysis",
+    "scope": "public",
+    "title": "Brain Lab analysis sources",
+    "content": "A saved scan can be reviewed beside mental-health check-ins, Wellness cognitive test sessions, earlier brain scans, or saved focus/stress metrics dated on or before the scan. At most 20 mental-health, 30 cognitive-session, 20 earlier-scan, or 30 metric records are summarized. The result is a personal observational report: not diagnosis, medical interpretation, or clinical severity."
+  },
+  {
+    "id": "ns-brainlab-finding",
+    "scope": "public",
+    "title": "Repeated scan trend finding",
+    "content": "A repeated regional finding can be flagged when consecutive supplied scan values are at least 10 points below the mean of earlier comparable scans. The report may list contextual factors elevated in both lower-scoring sessions and lower in earlier context. This is an association observation, not evidence of cause. Confidence reflects observation coverage, not causal certainty."
+  },
+  {
+    "id": "ns-wellness-overview",
+    "scope": "public",
+    "title": "Wellness overview",
+    "content": "Wellness at /wellness/ contains browser-based cognitive tasks, recent saved Brain Lab measurements, and a mental-health check-in entry point. It can store a state for each session and state-level environmental snapshot separately. Hardware sync creates or updates a WellnessProtocol record; it does not communicate with or collect from a physical device in the implemented MVP."
+  },
+  {
+    "id": "ns-wellness-tasks",
+    "scope": "public",
+    "title": "Cognitive task list",
+    "content": "Browser tasks cover temporal auditory verbal memory, semantic classification, emotion-word classification, frontal Go/No-Go, frontal Stroop, parietal spatial orientation, occipital visual detection, hippocampal delayed recall, and cerebellar timed tapping. Sessions may contain 5 to 60 trials normally. Choosing End test can save a partial session after at least one trial."
+  },
+  {
+    "id": "ns-wellness-trials",
+    "scope": "public",
+    "title": "Cognitive trial data",
+    "content": "Each saved trial stores stimulus metadata, correct/incorrect/omission outcome, response value, reaction time, and requested ear for applicable auditory tasks. Reaction-time values are accepted from 0 to 600,000 ms. Request payloads are limited to 100 KB and sessions store no more than 60 trials. Browser volume is relative browser-setting data, not measured sound pressure or verified ear routing."
+  },
+  {
+    "id": "ns-wellness-score",
+    "scope": "public",
+    "title": "Cognitive task score formula",
+    "content": "Exploratory performance uses: 0.50 × weighted accuracy + 0.25 × reaction-time score + 0.15 × response consistency - 0.10 × omission rate. The result is converted to 0–100. Temporal tasks weight lower-frequency and longer words more heavily. A sample-confidence value decreases for small sample size, omissions, missing timing, and timing variability. These tasks are heuristic and not validated clinical instruments."
+  },
+  {
+    "id": "ns-wellness-baseline",
+    "scope": "public",
+    "title": "Baseline and lower-than-baseline logic",
+    "content": "Adjusted score shrinks toward previous-session mean using sample_reliability = trials / (trials + 20). A lower-than-baseline flag requires two consecutive sessions at least 10 points below the mean of earlier sessions for that task. The app does not treat this flag as a diagnosis or clinical warning."
+  },
+  {
+    "id": "ns-mental-health",
+    "scope": "public",
+    "title": "Mental-health self-reflection check-in",
+    "content": "The Clinical Check-In at /wellness/mental-health/ asks branching questions for stress, anxiety, depression/low mood, burnout, or sleep difficulty. It includes a two-week safety question about self-harm thoughts. It is a self-report screener, not a diagnostic instrument and not a clinical severity score. Responses are shown as reflection cards."
+  },
+  {
+    "id": "ns-mental-health-crisis",
+    "scope": "public",
+    "title": "Mental-health crisis response",
+    "content": "If the user indicates possible self-harm thoughts, the check-in shows immediate support guidance. It directs US users to call or text 988 or text HOME to 741741. It directs others to local emergency services or findahelpline.com if in immediate danger. The app does not guarantee clinician escalation or emergency follow-up."
+  },
+  {
+    "id": "ns-neurohealth-coverage",
+    "scope": "public",
+    "title": "NeuroHealth Coverage",
+    "content": "NeuroHealth Coverage at /neurohealth/ combines up to 20 recent Brain Lab measurements, Wellness task sessions, mental-health check-ins, profile context, medical records, appointments, learning, protocols, and wallet activity into a descriptive personal review. It is explicitly not insurance, a diagnosis, or professional-care replacement. There is no insurance contract available on the subscribe route."
+  },
+  {
+    "id": "ns-emr",
+    "scope": "public",
+    "title": "EMR Exchange upload",
+    "content": "EMR Exchange is at /emr/. A signed-in user can upload a private title, document type, and PDF, PNG, JPEG, CSV, or TXT file up to 10 MB. The app calculates a partial SHA-256 label and stores file metadata, but it does not implement full file encryption. Upload listing requires profile sharing consent and only uploaded files can be listed."
+  },
+  {
+    "id": "ns-emr-marketplace",
+    "scope": "public",
+    "title": "EMR paid access workflow",
+    "content": "A clinician or researcher can request paid access to a listed record. The requester sets a case focus and needs a wallet balance at least equal to the listing price. A request is pending and does not immediately take funds. The owner approves or declines it. Approval debits the requester NST and credits the owner NST, then grants the requester record access. Decline or consent removal takes no payment. Listing prices must be greater than zero and no more than 1,000,000 NST."
+  },
+  {
+    "id": "ns-emr-consent",
+    "scope": "public",
+    "title": "EMR consent behavior",
+    "content": "Turning record-sharing consent off unlists the user's reports and declines pending access requests. Existing approved access remains in place. Only the owner or approved requester can view and download report detail. Marketplace search does not expose record content to non-approved users."
+  },
+  {
+    "id": "ns-wallet",
+    "scope": "public",
+    "title": "Health Wallet",
+    "content": "The Health Wallet at /health-wallet/ shows a user-specific NST balance, earnings, spending, and transaction history. It supports reward, payment, grant, record-sale, and record-access transaction types in the database. The page is an account ledger, not evidence of a live external payment rail or currency conversion."
+  },
+  {
+    "id": "ns-appointments",
+    "scope": "public",
+    "title": "Appointments",
+    "content": "Appointments are at /appointment/. The app can store a clinician or no clinician, date, time, telemedicine or in-person modality, notes, and sync checkboxes. Submission creates a requested-status database record. The sync checkboxes create DataAccessGrant rows for baseline, EMR, or pharmacy labels; they do not implement real record sharing or a pharmacy ledger."
+  },
+  {
+    "id": "ns-clinical-care",
+    "scope": "public",
+    "title": "Clinical Care",
+    "content": "Clinical Care at /clinical-care/ shows a clinician directory and lets the signed-in user upload a report. The upload handler can create a title/document type/report record and partial SHA-256 label. The implementation has weaker validation than EMR and should not be described as cryptographically encrypted by itself. Clinician cards are database/mock directory entries unless independently verified."
+  },
+  {
+    "id": "ns-tourism",
+    "scope": "public",
+    "title": "Medical tourism",
+    "content": "Medical Tourism at /medical-tourism/ shows facilities and lets a signed-in user create an itinerary with facility, date, duration, and notes. Created itineraries are Planned records only. They do not reserve travel, schedule care, collect payment, or medically clear the traveler. Facility and travel labels are sample or database content unless independently confirmed."
+  },
+  {
+    "id": "ns-neurolearn",
+    "scope": "public",
+    "title": "Neurolearn and GreenSpace",
+    "content": "Neurolearn at /neurolearn/ lists courses and lets the signed-in user start a module. Starting creates or finds an enrollment with progress 0 and status in_progress. GreenSpace at /greenspace/ creates or retrieves a user's community membership. Joining is a database membership action, not evidence of a live external DAO contract or benefit."
+  },
+  {
+    "id": "ns-messages-notifications",
+    "scope": "public",
+    "title": "Messages and notifications",
+    "content": "Messages at /messages/ create and display conversations and sent/received messages. Notifications at /notifications/ show account notifications and support marking them read. Ladi must not claim it can inspect another account's private messages or conversation history without account-authenticated access."
+  },
+  {
+    "id": "ns-privacy",
+    "scope": "public",
+    "title": "Privacy and location behavior",
+    "content": "NeuralSpace stores account records, profiles, reports, tasks, check-ins, appointments, messages, wallet entries, and scan data in a Django database. Location context is state-level and profile-based. Public Ladi support must not claim precise GPS, file encryption, regulatory compliance, NDPA approval, or account-data deletion unless separately verified."
+  },
+  {
+    "id": "ns-limitations",
+    "scope": "public",
+    "title": "Key customer-support limitations",
+    "content": "NeuralSpace MVP measurements and browser tasks are exploratory, not validated clinical instruments or diagnoses. Brain Lab CSV accepts supplied values, not live raw EEG. MySpace values, campaigns, telemetry, and verified labels in templates may be seeded display data. Apparent 'sync', 'encryption', 'verified', or 'live' UI language is not proof of external integration or credential verification."
+  }
+]
